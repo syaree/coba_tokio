@@ -1,6 +1,5 @@
-use tokio::io::{Result};
+use tokio::io::{Result, AsyncWriteExt, AsyncReadExt};
 use tokio::net::TcpListener;
-use tokio::prelude::io::AsyncReadExt;
 
 
 #[tokio::main]
@@ -22,6 +21,11 @@ async fn main() -> Result<()> {
                         println!("Receive: {:?}", message.trim());
 
                         if message.trim() == "?q" { return }
+
+                        if let Err(e) = stream.write_all(&buff[..len]).await {
+                            eprintln!("Error: {:?}", e);
+                            return
+                        }
                     }
                     Err(e) => {
                         eprintln!("Error: {:?}", e);
