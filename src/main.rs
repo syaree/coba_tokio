@@ -18,11 +18,14 @@ async fn main() -> Result<()> {
                     Ok(len) if len == 0 => return,
                     Ok(len) => {
                         let message = String::from_utf8_lossy(&buff[..len]);
-                        println!("Receive: {:?}", message.trim());
+                        let message = message.trim();
+                        println!("Receive: {:?}", message);
 
-                        if message.trim() == "?q" { return }
+                        if message == "?q" { return }
 
-                        if let Err(e) = stream.write_all(&buff[..len]).await {
+                        let new_message = format!("Response: {}\n", message).into_bytes();
+
+                        if let Err(e) = stream.write_all(&new_message).await {
                             eprintln!("Error: {:?}", e);
                             return
                         }
